@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Suplementos - Home</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"/>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: #fff4ea;
+      color: #6b1e16;
+      padding-bottom: calc(60px + env(safe-area-inset-bottom)); /* espaço extra */
+    }
+
+
+    header {
+      padding: 1rem;
+      text-align: right;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .carousel-container {
+      width: 500px;
+      max-width: 90%;
+      margin: 0 auto; /* centraliza na tela */
+      overflow: hidden;
+      height: 250px; /* altura média */
+      background-color: #fff4ea; /* opcional, fundo para preencher espaço */
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+      height: 100%;
+    }
+
+    .carousel-track img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* mostra a imagem completa sem cortar */
+      flex-shrink: 0;
+    }
+
+
+    .search-container {
+      display: flex;
+      justify-content: center;
+      padding: 0.5rem 1rem;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background-color: #fecd85;
+      border-radius: 25px;
+      padding: 0.5rem 1rem;
+      flex: 1;
+      max-width: 400px;
+      border: 1.5px solid   #dd6645;
+    }
+
+    .search-box input {
+      border: none;
+      outline: none;
+      flex: 1;
+      margin-left: 0.5rem;
+      background: transparent;
+          
+    }
+
+    .search-box button {
+      background-color: #fecd85;
+      border: none;
+      color:  #eb6743;
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    #campo-pesquisa::placeholder{
+      color: #e7643f ;
+    }
+
+    .categories {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      padding: 1rem;
+      flex-wrap: wrap;
+    }
+
+    a.category {
+      text-decoration: none;
+    }
+
+     .category {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.8rem 0.5rem; 
+      height: 80px;  
+      background-color: #bd4024;
+      color: #fff;
+      border-radius: 10px;
+      width: 100px;
+      font-size: 0.75rem;
+      text-align: center;
+      /* garantir que o texto quebre em mais de uma linha */
+      white-space: normal;
+    }
+
+    /* só o texto recebe hifenização manual (via &shy;) */
+    .cat-text {
+      hyphens: manual;
+      word-break: normal;
+      overflow-wrap: normal;
+      line-height: 1.1;
+      display: inline-block;
+      text-align: center;
+      max-width: 100%;
+    }
+   
+   
+    .category i {
+      font-size: 1.4rem;
+      margin-right: 6px;
+    }
+
+    .section-title {
+      padding: 0 1rem;
+      margin-top: 1rem;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+      align-items: stretch; 
+    }
+
+    .product {
+      background-color: #fecd85;
+      border-radius: 16px;
+      padding: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      position: relative;
+      height: 100%;
+    }
+
+    .product img {
+      width: 100%;
+      height: 130px;
+      border-radius: 12px;
+      object-fit: cover;
+      margin-bottom: 0.5rem;
+    }
+
+    .product .price {
+      font-weight: bold;
+      margin-top: 15px;
+      color: #dd6645;
+      font-size: 1rem;
+    }
+
+    .add-button {
+      background-color: #dd6645;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      font-size: 15px;
+      font-weight: bold;
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    footer nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin: 0;
+      padding: 0.5rem 0;
+      background-color: #fecd85;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+
+      /* 🔽 Impede o rodapé de subir com o teclado */
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+
+    footer nav ul li a {
+      color: #eb6743;
+      font-size: 1.5rem;
+      text-decoration: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      transition: color 0.3s ease;
+    }
+
+    footer nav ul li a:hover,
+    footer nav ul li a.active {
+      color: #c94c29;
+    }
+
+    @media (max-width: 400px) {
+      .category {
+        width: 80px;
+        font-size: 0.7rem;
+      }
+
+      .carousel img {
+        height: 140px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="carousel-container">
+    <div class="carousel-track">
+      <img src="kit1.png" alt="carrossel1">
+      <img src="kit2.png" alt="carrossel2">
+      <img src="kit3.png" alt="carrossel3">
+    </div>
+  </div>
+
+  <div class="search-container">
+    <div class="search-box">
+      <input id="campo-pesquisa" type="text" placeholder="Encontre o suplemento ideal para você" />
+      <button onclick="pesquisar()">
+        <i class="bi bi-search"></i>
+      </button>
+
+    </div>
+  </div>
+
+  <div class="categories">
+    <a href="#massa" class="category">
+      <i class="bi bi-activity"></i>
+      Massa muscular
+    </a>
+    <a href="#energia" class="category">
+      <i class="bi bi-lightning-fill"></i>
+      Energia
+    </a>
+   <a href="#emagrecimento" class="category">
+      <i class="bi bi-capsule"></i>
+      <!-- hifenização manual com &shy; -->
+      <span class="cat-text">Ema&shy;gre&shy;ci&shy;men&shy;to</span>
+    </a>
+  </div>
+
+  <div id="massa" class="section-title">
+    <span>Massa muscular</span>
+  </div>
+  <div class="product-grid">
+    <a href="whey3.html" style="text-decoration: none; color: #6b1e16; font-weight: bold;">
+      <div class="product">
+        <img src="whey3.png" alt="whey3">
+        <div>Whey Chocolate com avelã</div>
+        <div class="price">R$179,90</div>
+        <button class="add-button"><i class="bi bi-basket2-fill"></i></button>
+      </div>
+    </a>
+    <a href="whey4.html" style="text-decoration: none; color: #6b1e16; font-weight: bold;">
+      <div class="product">
+        <img src="whey4.png" alt="whey4">
+        <div>Whey Morango com banana</div>
+        <div class="price">R$170,00</div>
+        <button class="add-button"><i class="bi bi-basket2-fill"></i></button>
+      </div>
+    </a>
+  </div>
+
+  <div id="emagrecimento" class="section-title">
+    <span>Emagrecimento</span>
+  </div>
+  <div class="product-grid">
+    <a href="emagre1.html" style="text-decoration: none; color: #6b1e16; font-weight: bold;">
+      <div class="product">
+        <img src="creatinadux.png" alt="creatina">
+        <div>Creatina Dux 300g</div>
+        <div class="price">R$109,90</div>
+        <button class="add-button"><i class="bi bi-basket2-fill"></i></button>
+      </div>
+    </a>
+    <a href="emagre3.html" style="text-decoration: none; color: #6b1e16; font-weight: bold;">
+      <div class="product">
+        <img src="l.cartina.png" alt="l-carnitina">
+        <div>L-Carnitina 120 cápsulas</div>
+        <div class="price">R$109,12</div>
+        <button class="add-button"><i class="bi bi-basket2-fill"></i></button>
+      </div>
+    </a>
+  </div>
+
+  <div id="energia" class="section-title">
+    <span>Energia</span>
+  </div>
+  <div class="product-grid">
+    <a href="energia1.html" style="text-decoration: none; color: #6b1e16; font-weight: bold;">
+      <div class="product">
+        <img src="energia1.png" alt="pre-treino">
+        <div>Pré-Treino - Explode Energy 300g</div>
+        <div class="price">R$71,90</div>
+        <button class="add-button"><i class="bi bi-basket2-fill"></i></button>
+      </div>
+    </a>
+    <a href="energia3.html" style="text-decoration: none; color: #6b1e16; font-weight: bold;">
+      <div class="product">
+        <img src="energia3.png" alt="cafeina">
+        <div>Cafeína 37g - 60 cápsulas</div>
+        <div class="price">R$59,90</div>
+        <button class="add-button"><i class="bi bi-basket2-fill"></i></button>
+      </div>
+    </a>
+  </div>
+
+  <footer>
+    <nav>
+      <ul>
+        <li><a href="home.html" class="active"><i class="bi bi-house-door"></i></a></li>
+        <li><a href="carrinho.html"><i class="bi bi-cart"></i></a></li>
+        <li><a href="profile.html"><i class="bi bi-person-fill"></i></a></li>
+      </ul>
+    </nav>
+  </footer>
+
+  <script>
+  const track = document.querySelector('.carousel-track');
+  const slides = document.querySelectorAll('.carousel-track img');
+  let currentIndex = 0;
+
+  function goToSlide(index) {
+    track.style.transform = `translateX(-${index * 100}%)`;
+  }
+
+  setInterval(() => {
+    currentIndex = (currentIndex + 1) % slides.length;
+    goToSlide(currentIndex);
+  }, 4000);
+
+  // Suporte a swipe (touch)
+  let startX = 0;
+  let isDragging = false;
+
+  track.addEventListener('touchstart', (e) => {
+    startX = e.touches[0].clientX;
+    isDragging = true;
+  });
+
+  track.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    const moveX = e.touches[0].clientX;
+    const diff = startX - moveX;
+    if (diff > 50) {
+      // swipe esquerda
+      currentIndex = (currentIndex + 1) % slides.length;
+      goToSlide(currentIndex);
+      isDragging = false;
+    } else if (diff < -50) {
+      // swipe direita
+      currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+      goToSlide(currentIndex);
+      isDragging = false;
+    }
+  });
+
+  track.addEventListener('touchend', () => {
+    isDragging = false;
+  });
+
+  function pesquisar() {
+    const termo = document.getElementById("campo-pesquisa").value.trim();
+    if (termo === "") {
+      alert("Digite algo para pesquisar.");
+      return;
+    }
+
+    localStorage.setItem("termoPesquisa", termo);
+    window.location.href = "resultado.html";
+  }
+
+  // Ativa Enter também
+  document.getElementById("campo-pesquisa").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") pesquisar();
+  });
+</script>
+
+
+</body>
+</html>
+
+
+

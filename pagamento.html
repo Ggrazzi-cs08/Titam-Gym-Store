@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+
+<title>Pagamento PIX</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    background: #fff1e0;
+    font-family: 'Inter', sans-serif;
+    color: #7a3f2e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 10px;
+  }
+  .container {
+    background: #fece8538;
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    min-height: 600px;
+    border-radius: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    padding: 20px;
+    position: relative;
+    overflow-y: auto;
+  }
+
+  .icon-button1 {
+    background-color: #b13421f1;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+    margin-bottom: 15px;
+  }
+  .icon-button1:hover {
+    background-color: #922c19;
+  }
+
+  .content {
+    text-align: center;
+  }
+  .title {
+    font-weight: 600;
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+  .payment-status {
+    background: #fecd85;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 15px;
+    display: inline-block;
+    color: #7a3f2e;
+  }
+  .info-text {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .qr-container {
+    background: #fecd85;
+    border-radius: 16px;
+    padding: 20px;
+    display: inline-block;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 260px;
+  }
+  .qr-container i {
+    font-size: 140px;
+    color: #b13421f1;
+  }
+  .qr-label {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 12px;
+    color: #9c2424;
+  }
+
+  .pix-key-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    color: #7a3f2e;
+    margin-bottom: 15px;
+    padding: 8px;
+    border: 1px dashed #a3482f;
+    border-radius: 12px;
+    word-break: break-all;
+  }
+  .copy-icon {
+    width: 18px;
+    height: 18px;
+    stroke: #7a3f2e;
+    stroke-width: 2;
+    fill: none;
+  }
+  .copy-feedback {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #7a3f2e;
+    color: #f6f0e7;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    display: none;
+    z-index: 999;
+  }
+
+  .pay-button,
+  .invoice-button {
+    display: block;
+    margin: 10px auto;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    width: 80%;
+    max-width: 250px;
+    transition: background-color 0.3s ease;
+  }
+  .pay-button {
+    background-color: #a3482f;
+    color: #fff;
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+  .pay-button:hover {
+    background-color: #b13421f1;
+  }
+  .pay-button:disabled {
+    background-color: #dd7631;
+    cursor: not-allowed;
+  }
+  .invoice-button {
+    background-color: #fecd85;
+    color: #7a3f2e;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  .invoice-button:hover {
+    background-color: #e5b874;
+  }
+
+  .countdown-warning {
+    color: #e74c3c;
+    font-weight: bold;
+    animation: pulse 1s infinite;
+  }
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
+
+  /* Responsividade */
+  @media (max-width: 480px) {
+    .container {
+      border-radius: 16px;
+      padding: 15px;
+    }
+    .title {
+      font-size: 18px;
+    }
+    .qr-container i {
+      font-size: 110px;
+    }
+    .pix-key-container {
+      font-size: 13px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <button class="icon-button1" onclick="history.back()" aria-label="Voltar">
+    <i class="bi bi-arrow-left-short"></i>
+  </button>
+
+  <div class="content">
+    <div class="title">Forma de pagamento - PIX</div>
+    <div class="payment-status" id="paymentStatus">Pagamento pendente</div>
+    <div class="info-text">Você tem <span id="countdown">15:00</span> minutos para pagar com esse PIX</div>
+    
+    <div class="qr-container" title="Escanear QR Code">
+      <div class="qr-label">Escanear QR Code</div>
+      <i class="bi bi-qr-code-scan"></i>
+    </div>
+    
+    <div class="pix-key-container" onclick="copyPixKey()" title="Copiar chave PIX">
+      <span id="pixKey">Copiar Pix</span>
+      <svg class="copy-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+      </svg>
+    </div>
+    
+    <button id="payButton" class="pay-button">Pagamento realizado</button>
+    <button id="invoiceButton" class="invoice-button" style="display: none;">Ver Minha Nota Fiscal</button>
+  </div>
+  
+  <div class="copy-feedback" id="copyFeedback">Copiado!</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/12.2.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.2.1/firebase-auth-compat.js"></script>
+
+<script>
+// ========== CRONÔMETRO ==========
+let timeLeft = 15 * 60;
+let countdownInterval = null;
+
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+}
+
+function updateCountdown() {
+  const countdownEl = document.getElementById('countdown');
+  const statusEl = document.getElementById('paymentStatus');
+  const btn = document.getElementById('payButton');
+  
+  if (timeLeft <= 0) {
+    countdownEl.textContent = "00:00";
+    countdownEl.classList.add('countdown-warning');
+    statusEl.textContent = "Pagamento expirado";
+    statusEl.style.background = "#ffcccc";
+    btn.disabled = true;
+    btn.textContent = "Tempo esgotado";
+    
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+    }
+    return;
+  }
+  
+  countdownEl.textContent = formatTime(timeLeft);
+  
+  if (timeLeft <= 120) {
+    countdownEl.classList.add('countdown-warning');
+  } else {
+    countdownEl.classList.remove('countdown-warning');
+  }
+  
+  timeLeft--;
+}
+
+function startCountdown() {
+  // Reiniciar o tempo se necessário
+  timeLeft = 15 * 60;
+  
+  // Limpar qualquer intervalo existente
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+  }
+  
+  // Atualizar imediatamente e iniciar o intervalo
+  updateCountdown();
+  countdownInterval = setInterval(updateCountdown, 1000);
+}
+
+// Iniciar o cronômetro quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+  // Verificar se os elementos existem antes de iniciar
+  if (document.getElementById('countdown')) {
+    startCountdown();
+  }
+});
+
+// ========== COPIAR PIX ==========
+function copyPixKey() {
+  // Obter a chave PIX do elemento
+  const keyElement = document.getElementById("pixKey");
+  const key = keyElement.textContent || keyElement.innerText;
+  
+  // Verificar se a chave não está vazia
+  if (!key || key.trim() === "") {
+    alert("Chave PIX não disponível para copiar.");
+    return;
+  }
+  
+  // Usar a API moderna de clipboard
+  navigator.clipboard.writeText(key.trim()).then(() => {
+    // Mostrar feedback visual
+    const feedback = document.getElementById("copyFeedback");
+    if (feedback) {
+      feedback.style.display = "block";
+      setTimeout(() => {
+        feedback.style.display = "none";
+      }, 1500);
+    }
+  }).catch((err) => {
+    // Fallback para métodos mais antigos
+    console.error("Erro ao copiar com clipboard API:", err);
+    
+    // Método alternativo usando textarea
+    const textArea = document.createElement("textarea");
+    textArea.value = key.trim();
+    textArea.style.position = "fixed";
+    textArea.style.opacity = "0";
+    document.body.appendChild(textArea);
+    textArea.select();
+    
+    try {
+      const successful = document.execCommand('copy');
+      if (successful) {
+        const feedback = document.getElementById("copyFeedback");
+        if (feedback) {
+          feedback.style.display = "block";
+          setTimeout(() => {
+            feedback.style.display = "none";
+          }, 1500);
+        }
+      } else {
+        alert("Não foi possível copiar. Copie manualmente: " + key);
+      }
+    } catch (fallbackErr) {
+      console.error("Erro no método fallback:", fallbackErr);
+      alert("Não foi possível copiar. Copie manualmente: " + key);
+    }
+    
+    document.body.removeChild(textArea);
+  });
+}
+
+// ========== CONFIGURAÇÃO DO FIREBASE ==========
+const firebaseConfig = {
+  apiKey: "AIzaSyDtymMVJEmQUivZr7ruvQHdg0L370yUaJ4",
+  authDomain: "tytangym-9bed1.firebaseapp.com",
+  projectId: "tytangym-9bed1",
+  storageBucket: "tytangym-9bed1.firebasestorage.app",
+  messagingSenderId: "990222345653",
+  appId: "1:990222345653:web:452380931b495d5603a5fc",
+  measurementId: "G-MH4ZYXVKHT"
+};
+
+// Inicializar Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let userId = null;
+let pedidoId = null;
+let pedidoData = null;
+
+// Observar mudanças de autenticação
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    userId = user.uid;
+    console.log("Usuário logado:", userId);
+
+    // Buscar pedidoId da URL ou sessionStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    pedidoId = urlParams.get("pedidoId") || sessionStorage.getItem("pedidoId");
+
+    if (pedidoId) {
+      // Sempre salvar no sessionStorage para manter
+      sessionStorage.setItem("pedidoId", pedidoId);
+      await carregarDadosPedido(pedidoId);
+    } else {
+      alert("Erro: Pedido não encontrado. Redirecionando...");
+      window.location.href = "carrinho.html";
+    }
+  } else {
+    console.log("Usuário não autenticado");
+    window.location.href = "login.html";
+  }
+});
+
+// Função para carregar dados do pedido
+async function carregarDadosPedido(pedidoId) {
+  try {
+    const pedidoDoc = await db.collection('pedidos').doc(pedidoId).get();
+    
+    if (pedidoDoc.exists) {
+      pedidoData = pedidoDoc.data();
+      console.log("Pedido carregado:", pedidoData);
+      
+      // Gerar uma chave PIX aleatória para demonstração
+      document.getElementById("pixKey").textContent = 
+        "TITAN" + Math.random().toString(36).substr(2, 9).toUpperCase();
+    } else {
+      console.error("Pedido não encontrado no Firestore");
+      alert("Pedido não encontrado!");
+    }
+  } catch (error) {
+    console.error("Erro ao carregar pedido:", error);
+  }
+}
+
+// ========== BOTÃO DE PAGAMENTO ==========
+document.getElementById("payButton").addEventListener("click", async () => {
+  const btn = document.getElementById("payButton");
+  const statusEl = document.getElementById("paymentStatus");
+  const invoiceBtn = document.getElementById("invoiceButton");
+  
+  btn.disabled = true;
+  btn.textContent = "Processando...";
+  
+  try {
+    if (!pedidoId) {
+      throw new Error("ID do pedido não encontrado");
+    }
+    
+    // Atualizar status do pedido no Firestore
+    await db.collection('pedidos').doc(pedidoId).update({
+      status: 'aprovado',
+      pagoEm: firebase.firestore.FieldValue.serverTimestamp(),
+      // Adicionar um ID de transação simulado
+      transacaoId: "PIX" + Date.now().toString().substr(5)
+    });
+    
+    // Salvar dados completos do pedido no sessionStorage para a nota fiscal
+    const pedidoCompleto = {
+      ...pedidoData,
+      id: pedidoId,
+      transacaoId: "PIX" + Date.now().toString().substr(5),
+      pagoEm: new Date().toISOString()
+    };
+    
+    sessionStorage.setItem('pedidoCompleto', JSON.stringify(pedidoCompleto));
+    
+    // Atualizar UI
+    statusEl.textContent = "Pagamento aprovado!";
+    statusEl.style.background = "#ddffdd";
+    clearInterval(countdownInterval);
+    
+    setTimeout(() => {
+      btn.textContent = "Pagamento Concluído";
+      invoiceBtn.style.display = "block";
+      alert("Pagamento processado com sucesso!");
+    }, 2000);
+  } catch (error) {
+    console.error("Erro no processamento do pagamento:", error);
+    alert("Erro ao processar pagamento. Tente novamente.");
+    btn.disabled = false;
+    btn.textContent = "Pagamento realizado";
+  }
+});
+
+// ========== BOTÃO DA NOTA FISCAL ==========
+document.getElementById("invoiceButton").addEventListener("click", () => {
+  // Redirecionar para a nota fiscal com o ID do pedido
+  window.location.href = "Notafiscal.html?pedidoId=" + pedidoId;
+});
+
+// ========== INICIALIZAÇÃO ==========
+document.addEventListener("DOMContentLoaded", () => {
+  startCountdown();
+});
+</script>
+
+</body>
+</html>

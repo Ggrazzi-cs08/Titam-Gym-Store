@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Carrinho - Titan Gym Store</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"/>
+  <script src="https://www.gstatic.com/firebasejs/12.2.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.2.1/firebase-auth-compat.js"></script>
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #fff1e0;
+      color: #6b1e16;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: #fff1e0;
+      padding: 1rem;
+      text-align: center;
+      position: relative;
+      border-bottom: 1px solid #e8d5c4;
+    }
+
+    .h2 {
+      font-size: 1.6rem;
+      margin: 0;
+      text-align: center;
+      letter-spacing: 1px;
+      top: 60%;
+    }
+
+    .voltar {
+      position: absolute;
+      top: 32px;
+      left: 30px;
+      background: #a13a24;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    main {
+      flex-grow: 1;
+      padding: 1rem;
+    }
+
+    .item {
+      background: #fff6ec;
+      border-radius: 12px;
+      margin-bottom: 0.8rem;
+      display: flex;
+      gap: 0.8rem;
+      padding: 0.8rem;
+      align-items: center;
+      box-shadow: 0 1px 4px rgb(0 0 0 / 0.05);
+    }
+
+    .item img {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .info {
+      flex: 1;
+    }
+
+    .info h4 {
+      margin: 0;
+      font-size: 0.95rem;
+      color: #a8432a;
+    }
+
+    .info p {
+      margin: 2px 0;
+      font-size: 0.8rem;
+      color: #6b1e16;
+    }
+
+    .quantidade-controller {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 5px;
+    }
+
+    .quantidade-controller button {
+      background: #c2412d;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .quantidade-controller span {
+      font-weight: bold;
+    }
+
+    .remover {
+      background: transparent;
+      border: none;
+      color: #c2412d;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .total {
+      background-color: #fecd85;
+      border-radius: 8px;
+      padding: 0.8rem;
+      text-align: center;
+      font-weight: bold;
+      margin: 5px auto 5px;
+      font-size: 1rem;
+      width: 250px;
+    }
+
+    /* Cupom */
+    .cupom {
+      background-color: #fff6ec;
+      border: 2px dashed #c94c29;
+      border-radius: 8px;
+      padding: 0.8rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #a8432a;
+      font-weight: bold;
+      margin: 10px auto;
+      width: 250px;
+      display: none;
+    }
+
+    .cupom select {
+      margin-top: 5px;
+      padding: 6px;
+      border-radius: 6px;
+      border: 1px solid #c94c29;
+      width: 100%;
+      font-size: 0.9rem;
+      background: #fff1e0;
+      color: #6b1e16;
+    }
+
+    .cupom-option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .cupom-option button {
+      background: #c94c29;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+
+    /* Botão finalizar compra */
+    #finalizar-compra {
+      display: block;
+      margin: 20px auto 90px;
+      width: 265px;
+      padding: 0.9rem;
+      font-size: 1rem;
+      background-color: #fecd85;
+      border: none;
+      border-radius: 8px;
+      color: #6b1e16;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    #finalizar-compra:hover {
+      background-color:  #ffb072;
+    }
+
+    #finalizar-compra:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+
+    /* Barra de seleção */
+    .select-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0 1rem 10px;
+      font-size: 0.9rem;
+    }
+
+    .select-left {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+    }
+
+    .select-right {
+      font-weight: bold;
+      color: #a8432a;
+    }
+
+    .vazio {
+      text-align: center;
+      padding: 2rem;
+      color: #a8432a;
+    }
+
+    footer nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin: 0;
+      padding: 0.5rem 0;
+      background-color: #fecd85;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    footer nav ul li a {
+      color: #eb6743;
+      font-size: 1.5rem;
+      text-decoration: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      transition: color 0.3s ease;
+    }
+
+    footer nav ul li a:hover,
+    footer nav ul li a.active {
+      color: #c94c29;
+    }
+
+    .mensagem-flutuante {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #c94c29;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .mensagem-flutuante.mostrar {
+      opacity: 1;
+    }
+
+    .item-checkbox {
+      margin-right: 10px;
+    }
+
+    .cupom-aplicado {
+      background-color: #ddffdd !important;
+      border: 2px solid #c94c29 !important;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <button class="voltar" onclick="history.back()">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <h2>Meu Carrinho</h2>
+  </header>
+
+  <!-- Barra de selecionar todos + contador -->
+  <div class="select-bar">
+    <div class="select-left">
+      <input type="checkbox" id="select-all"> Selecionar todos
+    </div>
+    <div class="select-right" id="contador-selecionados">Selecionados: 0</div>
+  </div>
+
+  <main id="carrinho-container"></main>
+
+  <div class="total" id="total-geral">Total: R$ 0,00</div>
+  
+   <!-- Cupom -->
+  <div class="cupom" id="cupom-box">
+    <div class="cupom-option">
+      <span>Aplicar cupom:</span>
+      <button onclick="aplicarCupom()">Aplicar</button>
+    </div>
+    <select id="cupom-select">
+      <option value="0">Selecione um cupom</option>
+      <option value="5">5OFF - 5% de desconto</option>
+      <option value="10">10OFF - 10% de desconto</option>
+      <option value="20">20OFF - 20% de desconto</option>
+    </select>
+  </div>
+  <button id="finalizar-compra" onclick="finalizarCompra()">Finalizar Compra</button>
+
+  <footer>
+    <nav>
+      <ul>
+        <li><a href="home.html"><i class="bi bi-house-door"></i></a></li>
+        <li><a href="carrinho.html" class="active"><i class="bi bi-cart"></i></a></li>
+        <li><a href="profile.html"><i class="bi bi-person-fill"></i></a></li>
+      </ul>
+    </nav>
+  </footer>
+
+  <div class="mensagem-flutuante" id="mensagem-carrinho"></div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+  import {
+    getFirestore,
+    doc,
+    getDoc,
+    setDoc,
+    updateDoc,
+    deleteField,
+    serverTimestamp,
+    collection,
+    addDoc
+  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDtymMVJEmQUivZr7ruvQHdg0L370yUaJ4",
+    authDomain: "tytangym-9bed1.firebaseapp.com",
+    projectId: "tytangym-9bed1",
+    storageBucket: "tytangym-9bed1.firebasestorage.app",
+    messagingSenderId: "990222345653",
+    appId: "1:990222345653:web:452380931b495d5603a5fc",
+    measurementId: "G-MH4ZYXVKHT"
+  };
+
+  // Inicializar Firebase (modular)
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // Referências globais
+  let carrinhoItens = [];
+  let userId = null;
+  let cupomSelecionado = 0;
+
+  // Observar mudanças no estado de autenticação
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      userId = user.uid;
+      console.log("Usuário logado:", userId);
+      carregarCarrinho();
+    } else {
+      console.log("Usuário não autenticado");
+      window.location.href = "login.html";
+    }
+  });
+
+  // Função para carregar o carrinho do Firestore
+  async function carregarCarrinho() {
+    try {
+      const carrinhoRef = doc(db, "carrinhos", userId);
+      const carrinhoDoc = await getDoc(carrinhoRef);
+
+      if (carrinhoDoc.exists()) {
+        const data = carrinhoDoc.data();
+
+        // Verificar se os itens estão como array
+        if (data.itens && Array.isArray(data.itens)) {
+          carrinhoItens = data.itens;
+        }
+        // Se não encontrar 'itens', verificar se existe 'items' (com s)
+        else if (data.items && Array.isArray(data.items)) {
+          carrinhoItens = data.items;
+          // Corrigir a estrutura no Firestore
+          await updateDoc(carrinhoRef, {
+            itens: data.items,
+            items: deleteField()
+          });
+        }
+        // Se não encontrar como array, procurar por campos soltos
+        else {
+          carrinhoItens = [];
+          for (const key in data) {
+            if (data.hasOwnProperty(key) &&
+                key !== 'atualizadoEm' &&
+                key !== 'cupomCodigo' &&
+                key !== 'descontoAplicado' &&
+                data[key] !== null &&
+                typeof data[key] === 'object' &&
+                data[key].imagem && data[key].preco) {
+              carrinhoItens.push(data[key]);
+            }
+          }
+
+          // Se encontrou itens, corrigir a estrutura
+          if (carrinhoItens.length > 0) {
+            await updateDoc(carrinhoRef, { itens: carrinhoItens });
+          }
+        }
+
+        exibirCarrinho();
+      } else {
+        // Criar um carrinho vazio se não existir
+        await setDoc(carrinhoRef, {
+          itens: [],
+          atualizadoEm: serverTimestamp()
+        }, { merge: true });
+        carrinhoItens = [];
+        exibirCarrinho();
+      }
+    } catch (error) {
+      console.error("Erro ao carregar carrinho:", error);
+      mostrarMensagem("Erro ao carregar carrinho");
+    }
+  }
+
+  // Função para exibir os itens do carrinho
+  function exibirCarrinho() {
+    const container = document.getElementById('carrinho-container');
+    const totalGeral = document.getElementById('total-geral');
+    const finalizarBtn = document.getElementById('finalizar-compra');
+    const selectAll = document.getElementById('select-all');
+    const cupomBox = document.getElementById('cupom-box');
+
+    if (!container) return; // proteção caso o script seja executado em página sem o elemento
+
+    if (carrinhoItens.length === 0) {
+      container.innerHTML = '<div class="vazio">Seu carrinho está vazio.</div>';
+      if (totalGeral) totalGeral.textContent = 'Total: R$ 0,00';
+      if (finalizarBtn) finalizarBtn.disabled = true;
+      if (selectAll) {
+        selectAll.checked = false;
+        selectAll.disabled = true;
+      }
+      if (cupomBox) cupomBox.style.display = 'none';
+      atualizarContadorSelecionados();
+      return;
+    }
+
+    if (finalizarBtn) finalizarBtn.disabled = false;
+    if (selectAll) selectAll.disabled = false;
+
+    let html = '';
+
+    carrinhoItens.forEach((item, index) => {
+      const quantidade = item.quantidade || 1;
+      html += `
+        <div class="item">
+          <input type="checkbox" class="item-checkbox" data-index="${index}">
+          <img src="${item.imagem}" alt="${item.nome}">
+          <div class="info">
+            <h4>${item.nome}</h4>
+            <p>R$ ${item.preco.toFixed(2).replace('.', ',')} cada</p>
+            <div class="quantidade-controller">
+              <button onclick="alterarQuantidade(${index}, -1)">-</button>
+              <span>${quantidade}</span>
+              <button onclick="alterarQuantidade(${index}, 1)">+</button>
+            </div>
+          </div>
+          <button class="remover" onclick="removerItem(${index})">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+
+    // Atualizar o contador de selecionados
+    atualizarContadorSelecionados();
+
+    // Adicionar event listeners para os checkboxes dos itens
+    const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+    itemCheckboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', atualizarContadorSelecionados);
+    });
+  }
+
+  // Função para atualizar cupons disponíveis
+  function atualizarCupons() {
+    const cupomBox = document.getElementById('cupom-box');
+    const cupomSelect = document.getElementById('cupom-select');
+
+    if (!cupomSelect) return;
+
+    // Calcular o total apenas dos itens selecionados
+    let totalSelecionados = 0;
+    const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+
+    checkboxes.forEach(checkbox => {
+      const index = parseInt(checkbox.getAttribute('data-index'));
+      totalSelecionados += (carrinhoItens[index].preco * (carrinhoItens[index].quantidade || 1));
+    });
+
+    // Limpar opções existentes (exceto a primeira)
+    while (cupomSelect.options.length > 1) {
+      cupomSelect.remove(1);
+    }
+
+    // Adicionar cupons baseados no valor total dos SELECIONADOS
+    if (totalSelecionados >= 200) {
+      cupomSelect.innerHTML += '<option value="20">20OFF - 20% de desconto</option>';
+    }
+    if (totalSelecionados >= 100) {
+      cupomSelect.innerHTML += '<option value="10">10OFF - 10% de desconto</option>';
+    }
+    if (totalSelecionados >= 50) {
+      cupomSelect.innerHTML += '<option value="5">5OFF - 5% de desconto</option>';
+    }
+
+    // Mostrar a caixa de cupom se houver cupons disponíveis
+    if (cupomSelect.options.length > 1) {
+      if (cupomBox) cupomBox.style.display = 'block';
+    } else {
+      if (cupomBox) cupomBox.style.display = 'none';
+      cupomSelecionado = 0;
+    }
+
+    // Atualizar o total com desconto
+    atualizarTotalComDesconto(totalSelecionados);
+  }
+
+  // Função para aplicar cupom
+  function aplicarCupom() {
+    const cupomSelect = document.getElementById('cupom-select');
+    if (!cupomSelect) return;
+    cupomSelecionado = parseInt(cupomSelect.value) || 0;
+
+    // Calcular o total apenas dos itens selecionados
+    let totalSelecionados = 0;
+    const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+
+    checkboxes.forEach(checkbox => {
+      const index = parseInt(checkbox.getAttribute('data-index'));
+      totalSelecionados += (carrinhoItens[index].preco * (carrinhoItens[index].quantidade || 1));
+    });
+
+    // Atualizar o total com desconto
+    atualizarTotalComDesconto(totalSelecionados);
+
+    if (cupomSelecionado > 0) {
+      mostrarMensagem(`Cupom aplicado: ${cupomSelecionado}% de desconto`);
+    }
+  }
+
+  // Função para atualizar o total com desconto
+  function atualizarTotalComDesconto(total) {
+    const totalGeral = document.getElementById('total-geral');
+    if (!totalGeral) return;
+
+    let totalFinal = total;
+    if (cupomSelecionado > 0) {
+      const desconto = total * cupomSelecionado / 100;
+      totalFinal = total - desconto;
+      totalGeral.innerHTML = `Total: R$ ${total.toFixed(2).replace('.', ',')}<br>Desconto: ${cupomSelecionado}% (R$ ${desconto.toFixed(2).replace('.', ',')})<br>Total com desconto: R$ ${totalFinal.toFixed(2).replace('.', ',')}`;
+    } else {
+      totalGeral.textContent = `Total: R$ ${total.toFixed(2).replace('.', ',')}`;
+    }
+  }
+
+  // Função para alterar a quantidade de um item
+  async function alterarQuantidade(index, delta) {
+    if (!carrinhoItens[index]) return;
+    carrinhoItens[index].quantidade = (carrinhoItens[index].quantidade || 1) + delta;
+
+    if (carrinhoItens[index].quantidade < 1) {
+      carrinhoItens[index].quantidade = 1;
+    }
+
+    await atualizarCarrinhoNoFirestore();
+    exibirCarrinho();
+  }
+
+  // Função para remover um item do carrinho
+  async function removerItem(index) {
+    carrinhoItens.splice(index, 1);
+    await atualizarCarrinhoNoFirestore();
+    exibirCarrinho();
+    mostrarMensagem("Item removido do carrinho");
+  }
+
+  // Função para atualizar o carrinho no Firestore
+  async function atualizarCarrinhoNoFirestore() {
+    try {
+      const carrinhoRef = doc(db, "carrinhos", userId);
+      await setDoc(carrinhoRef, {
+        itens: carrinhoItens,
+        atualizadoEm: serverTimestamp()
+      }, { merge: true });
+    } catch (error) {
+      console.error("Erro ao atualizar carrinho:", error);
+      mostrarMensagem("Erro ao atualizar carrinho");
+    }
+  }
+
+  // Função para finalizar a compra
+  async function finalizarCompra() {
+    try {
+      // Verificar se há itens selecionados
+      const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+      if (checkboxes.length === 0) {
+        mostrarMensagem("Selecione pelo menos um item para finalizar a compra");
+        return;
+      }
+
+      // Obter índices dos itens selecionados
+      const indicesSelecionados = Array.from(checkboxes).map(checkbox =>
+        parseInt(checkbox.getAttribute('data-index'))
+      );
+
+      // Filtrar apenas os itens selecionados
+      const itensSelecionados = carrinhoItens.filter((_, index) =>
+        indicesSelecionados.includes(index)
+      );
+
+      // Calcular total
+      let total = 0;
+      itensSelecionados.forEach(item => {
+        total += (item.preco * (item.quantidade || 1));
+      });
+
+      // Aplicar desconto se houver
+      if (cupomSelecionado > 0) {
+        total = total - (total * cupomSelecionado / 100);
+      }
+
+      // Criar pedido no Firestore
+      const pedidoRef = await addDoc(collection(db, 'pedidos'), {
+        userId: userId,
+        itens: itensSelecionados,
+        total: total,
+        desconto: cupomSelecionado,
+        status: 'pendente',
+        criadoEm: serverTimestamp()
+      });
+
+      // Salvar ID do pedido no sessionStorage para usar na página de pagamento
+      sessionStorage.setItem('pedidoId', pedidoRef.id);
+
+      // Remover itens comprados do carrinho
+      const novosItens = carrinhoItens.filter((_, index) =>
+        !indicesSelecionados.includes(index)
+      );
+      carrinhoItens = novosItens;
+      await atualizarCarrinhoNoFirestore();
+
+      // Redirecionar para a página de pagamento
+      window.location.href = "pagamento.html?pedidoId=" + pedidoRef.id;
+
+    } catch (error) {
+      console.error("Erro ao finalizar compra:", error);
+      mostrarMensagem("Erro ao finalizar compra: " + error.message);
+    }
+  }
+
+  // Função para mostrar mensagens temporárias
+  function mostrarMensagem(mensagem) {
+    const elemento = document.getElementById('mensagem-carrinho');
+    if (!elemento) return;
+    elemento.textContent = mensagem;
+    elemento.classList.add('mostrar');
+
+    setTimeout(() => {
+      elemento.classList.remove('mostrar');
+    }, 3000);
+  }
+
+  // Função para atualizar o contador de itens selecionados
+  function atualizarContadorSelecionados() {
+    const checkboxes = document.querySelectorAll('.item-checkbox');
+    const selecionados = document.querySelectorAll('.item-checkbox:checked');
+
+    const contadorEl = document.getElementById('contador-selecionados');
+    if (contadorEl) contadorEl.textContent = `Selecionados: ${selecionados.length}`;
+
+    // Atualizar o estado do checkbox "Selecionar todos"
+    const selectAll = document.getElementById('select-all');
+    if (selectAll) {
+      if (selecionados.length === 0) {
+        selectAll.checked = false;
+        selectAll.indeterminate = false;
+      } else if (selecionados.length === checkboxes.length) {
+        selectAll.checked = true;
+        selectAll.indeterminate = false;
+      } else {
+        selectAll.checked = false;
+        selectAll.indeterminate = true;
+      }
+    }
+
+    // Atualizar cupons baseado no total dos itens selecionados
+    atualizarCupons();
+  }
+
+  // Adicionar evento ao checkbox "Selecionar todos"
+  const selectAllEl = document.getElementById('select-all');
+  if (selectAllEl) {
+    selectAllEl.addEventListener('change', function() {
+      const checkboxes = document.querySelectorAll('.item-checkbox');
+      checkboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+      });
+      atualizarContadorSelecionados();
+    });
+  }
+
+  // Inicializar o contador de selecionados quando a página carregar
+  document.addEventListener('DOMContentLoaded', function() {
+    atualizarContadorSelecionados();
+  });
+
+  // expor funções globais
+  window.alterarQuantidade = alterarQuantidade;
+  window.removerItem = removerItem;
+  window.finalizarCompra = finalizarCompra;
+  window.aplicarCupom = aplicarCupom;
+</script>
+
+</body>
+</html>

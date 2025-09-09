@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resultados da Pesquisa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #fff4ea;
+      font-family: 'Inter', sans-serif;
+      color: #6b1e16;
+      margin: 0;
+      padding-bottom: 60px;
+    }
+
+    header {
+      padding: 40px;
+      background-color: #fff4ea;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    header h1 {
+      color: #C2412D;
+      margin: 0;
+      font-size: 1.4rem;
+    }
+
+    .dish {
+      background-color: #fecd85;
+      border-radius: 16px;
+      padding: 1rem;
+      width: 100%;
+      max-width: 220px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .dish-image {
+      width: 100%;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 0.5rem;
+    }
+
+    .dish-title {
+      font-weight: bold;
+      margin: 0.5rem 0 0.3rem;
+    }
+
+    .dish-description {
+      font-size: 0.85rem;
+      color: #6b1e16;
+    }
+
+    .dish-rate {
+      margin-top: 0.3rem;
+      color: #f9a825;
+    }
+
+    .dish-price {
+      margin-top: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-default {
+      background-color: #dd6645;
+      color: white;
+      padding: 0.4rem 0.6rem;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+
+    #resultados-pesquisa {
+      padding: 2rem 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 20px;
+      justify-items: center;
+    }
+
+    .mensagem {
+      text-align: center;
+      font-size: 1.1rem;
+      margin-top: 2rem;
+    }
+
+    .icon-button1 {
+      font-size: 30px;
+      cursor: pointer;
+      background: #dd6645;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 36px;
+      width: 36px;
+    }
+
+    footer nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin: 0;
+      padding: 0.5rem 0;
+      background-color: #fecd85;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    footer nav ul li a {
+      color: #eb6743;
+      font-size: 1.5rem;
+      text-decoration: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      transition: color 0.3s ease;
+    }
+
+    footer nav ul li a:hover,
+    footer nav ul li a.active {
+      color: #c94c29;
+    }
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 1.2rem;
+      }
+
+      .dish-price h4 {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <button class="icon-button1" onclick="history.back()">
+      <i class="bi bi-arrow-left-short"></i>
+    </button>
+    <h1>Resultados da Pesquisa</h1>
+  </header>
+
+  <main>
+    <div id="resultados-pesquisa"></div>
+    <div id="mensagem" class="mensagem"></div>
+  </main>
+
+  <footer>
+    <nav>
+      <ul>
+        <li><a href="home.html" class="active"><i class="bi bi-house-door"></i></a></li>
+        <li><a href="carrinho.html"><i class="bi bi-cart"></i></a></li>
+        <li><a href="profile.html"><i class="bi bi-person-fill"></i></a></li>
+      </ul>
+    </nav>
+  </footer>
+
+  <script src="dados.js"></script>
+  <script>
+    function exibirProdutos(produtosFiltrados) {
+      const section = document.getElementById('resultados-pesquisa');
+      section.innerHTML = '';
+
+      produtosFiltrados.forEach(produto => {
+        const div = document.createElement('div');
+        div.classList.add('dish');
+        div.innerHTML = `
+          <img src="${produto.imagem}" class="dish-image" alt="${produto.nome}">
+          <h3 class="dish-title">${produto.nome}</h3>
+          <span class="dish-description">${produto.descricao}</span>
+          <div class="dish-price">
+            <h4>${produto.preco}</h4>
+            <a href="${produto.link}" class="btn-default">
+              <i class="fa-solid fa-basket-shopping"></i>
+            </a>
+          </div>
+        `;
+        section.appendChild(div);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const termo = localStorage.getItem("termoPesquisa")?.toLowerCase();
+      if (!termo) {
+        document.getElementById("mensagem").textContent = "Nenhum termo de pesquisa encontrado.";
+        return;
+      }
+
+      const produtosFiltrados = dados.filter(dado => {
+        const nome = dado.nome.toLowerCase();
+        const descricao = dado.descricao.toLowerCase();
+        return nome.includes(termo) || descricao.includes(termo);
+      });
+
+      if (!produtosFiltrados.length) {
+        document.getElementById("mensagem").textContent = "Resultado não encontrado.";
+        return;
+      }
+
+      exibirProdutos(produtosFiltrados);
+    });
+  </script>
+</body>
+</html>

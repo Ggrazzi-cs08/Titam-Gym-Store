@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creatina</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"/>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #fff4ea;
+      color: #6b1e16;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    header {
+      background: #fff4ea;
+      padding: 40px 20px 40px 20px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .h2 {
+      font-size: 1.6rem;
+      margin: 0;
+      text-align: center;
+      letter-spacing: 1px;
+      top: 60%;
+    }
+
+    .carrinho-link {
+      position: absolute;
+      right: 30px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #dd6645;
+      color: white;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+    }
+    .carrinho-link:hover {
+      background-color: #bb5533;
+    }
+
+    .icon-button1 {
+      position: absolute;
+      left: 30px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #dd6645;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .icon-button1:hover {
+      background-color: #bb5533;
+    }
+
+    /* Fundo marrom que vai até a descrição */
+    .product-section {
+      background-color: #8c3d2e;
+      border-radius: 1200px 1200px 0 0;
+      width: 100%;
+      max-width: 450px;
+      margin: 0 auto;
+      position: relative;
+      padding-top: 60px;
+      padding-bottom: 0; /* gruda na descrição */
+    }
+
+    .product-image {
+      width: 60%;
+      max-width: 320px;
+      margin: 0 auto;
+      display: block;
+      position: relative;
+      z-index: 2;
+      top: -40px;
+    }
+
+    .product-info {
+      background: #ffe2b8;
+      border-radius: 30px 30px 0 0;
+      padding: 2.5rem 2rem 3rem 2rem;
+      position: relative;
+      z-index: 3;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin-top: -10px; /* sobe um pouco sobre o marrom */
+    }
+
+    .product-title {
+      font-weight: 700;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .product-description {
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+      color: #5c2a1e;
+      text-align: justify;
+    }
+
+    .acoes-produto {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      padding: 1.5rem 1rem;
+      background-color: #ffe1b3;
+      border-top: 1px solid #e0b98d;
+      flex-wrap: wrap;
+      border-radius: 0 0 30px 30px;
+      max-width: 450px;
+      margin: 0 auto;
+    }
+
+    .quantidade-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: nowrap;
+    }
+
+    .btn-menor,
+    .btn-maior {
+      background-color: #c2412d;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 1.4rem;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .btn-menor:hover,
+    .btn-maior:hover {
+      background-color: #aa3b26;
+    }
+
+    .quantidade {
+      font-size: 1.4rem;
+      color: #5c1f0e;
+      font-weight: 700;
+      min-width: 25px;
+      text-align: center;
+    }
+
+    .preco-total {
+      font-size: 1.1rem;
+      color: #5c1f0e;
+      margin-left: 18px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .btn-comprar {
+      background-color: #c2412d;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 25px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      flex-grow: 1;
+      min-width: 160px;
+      transition: background-color 0.3s ease;
+    }
+    .btn-comprar:hover {
+      background-color: #aa3b26;
+    }
+
+    /* Responsividade */
+    @media (max-width: 600px) {
+      header {
+        padding: 30px 15px 30px 15px;
+      }
+
+      header h2 {
+        font-size: 1.3rem;
+      }
+
+      .product-section {
+        padding-top: 40px;
+        max-width: 100%;
+      }
+
+      .product-image {
+        width: 75%;
+        top: -30px;
+      }
+
+      .product-info {
+        padding: 2rem 1.5rem 2.5rem 1.5rem;
+        max-width: 100%;
+      }
+
+      .acoes-produto {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1.5rem;
+        max-width: 100%;
+      }
+
+      .quantidade-container {
+        justify-content: center;
+        margin-bottom: 1rem;
+      }
+
+      .btn-comprar {
+        width: 100%;
+        min-width: auto;
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <button class="icon-button1" onclick="history.back()">
+      <i class="bi bi-arrow-left-short"></i>
+    </button>
+
+    <h2>Chocolate com Avelã</h2>
+
+    <a href="carrinho.html" class="carrinho-link">
+      <i class="bi bi-cart-fill"></i>
+    </a>
+  </header>
+
+  <!-- Vermelho + descrição -->
+  <div class="product-section">
+    <img id="imagem-produto" class="product-image" src="whey3.png">
+
+    <div class="product-info">
+      <div id="nome-produto" class="product-title">Whey Protein - Chocolate com Avelã</div>
+      <div class="product-description">
+        Intenso, cremoso e sofisticado. O Whey Protein Chocolate com Avelã oferece o sabor envolvente do chocolate combinado ao toque marcante da avelã. Lembra o famoso creme de avelã, mas com alto valor proteico e muito mais saudável.
+      </div>
+
+      <div class="acoes-produto"> 
+        <div class="quantidade-container">
+          <button class="btn-menor" onclick="alterarQuantidade(-1)">−</button>
+          <span id="quantidade" class="quantidade">1</span>
+          <button class="btn-maior" onclick="alterarQuantidade(1)">+</button>
+          <span id="preco-total" class="preco-total">R$179,90</span>
+        </div>
+        <button class="btn-comprar" onclick="adicionarAoCarrinho()">Compre agora</button>
+      </div>
+    </div>
+  </div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  import { 
+    getAuth, 
+    onAuthStateChanged 
+  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+  import { 
+    getFirestore, 
+    doc, 
+    getDoc, 
+    setDoc, 
+    serverTimestamp 
+  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDtymMVJEmQUivZr7ruvQHdg0L370yUaJ4",
+    authDomain: "tytangym-9bed1.firebaseapp.com",
+    projectId: "tytangym-9bed1",
+    storageBucket: "tytangym-9bed1.firebasestorage.app",
+    messagingSenderId: "990222345653",
+    appId: "1:990222345653:web:452380931b495d5603a5fc",
+    measurementId: "G-MH4ZYXVKHT"
+  };
+
+  // Inicializar Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  let quantidade = 1;
+  const precoUnitario = 179.90;
+  let userId = null;
+
+  // Verificar se usuário está logado
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      userId = user.uid;
+      console.log("Usuário logado:", userId);
+    } else {
+      console.log("Usuário não autenticado");
+      mostrarMensagem("Faça login para adicionar itens ao carrinho");
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 2000);
+    }
+  });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("preco-total").textContent = 
+      `R$ ${(quantidade * precoUnitario).toFixed(2).replace('.', ',')}`;
+  });
+
+  function alterarQuantidade(delta) {
+    quantidade += delta;
+    if (quantidade < 1) quantidade = 1;
+
+    document.getElementById('quantidade').textContent = quantidade;
+    document.getElementById('preco-total').textContent = 
+      `R$ ${(quantidade * precoUnitario).toFixed(2).replace('.', ',')}`;
+  }
+
+  // FUNÇÃO CORRIGIDA - Agora usando Firebase Modular
+  async function adicionarAoCarrinho() {
+    if (!userId) {
+      mostrarMensagem("Faça login para adicionar itens ao carrinho");
+      setTimeout(() => {
+        window.location.href = "login.html";
+      }, 2000);
+      return;
+    }
+
+    const nomeProduto = document.getElementById("nome-produto").textContent;
+    const imagemProduto = document.getElementById("imagem-produto").getAttribute("src");
+
+    try {
+      // Obter o carrinho atual do usuário
+      const carrinhoRef = doc(db, "carrinhos", userId);
+      const carrinhoDoc = await getDoc(carrinhoRef);
+      let carrinhoItens = [];
+
+      if (carrinhoDoc.exists()) {
+        carrinhoItens = carrinhoDoc.data().itens || [];
+      }
+
+      // Verificar se o produto já está no carrinho
+      const produtoExistenteIndex = carrinhoItens.findIndex(item => 
+        item.nome === nomeProduto
+      );
+
+      const novoItem = {
+        id: Date.now(),
+        nome: nomeProduto,
+        imagem: imagemProduto,
+        preco: precoUnitario,
+        quantidade: quantidade
+      };
+
+      if (produtoExistenteIndex !== -1) {
+        // Atualizar a quantidade se o produto já existir
+        carrinhoItens[produtoExistenteIndex].quantidade += quantidade;
+      } else {
+        // Adicionar novo produto ao carrinho
+        carrinhoItens.push(novoItem);
+      }
+
+      // Salvar no Firestore
+      await setDoc(carrinhoRef, {
+        itens: carrinhoItens,
+        atualizadoEm: serverTimestamp()
+      }, { merge: true });
+
+      mostrarMensagem("Produto adicionado ao carrinho!");
+      
+      // Redefinir a quantidade para 1 após adicionar ao carrinho
+      quantidade = 1;
+      document.getElementById('quantidade').textContent = quantidade;
+      document.getElementById('preco-total').textContent = 
+        `R$ ${(quantidade * precoUnitario).toFixed(2).replace('.', ',')}`;
+
+    } catch (error) {
+      console.error("Erro ao adicionar ao carrinho:", error);
+      mostrarMensagem("Erro ao adicionar produto ao carrinho");
+    }
+  }
+
+  function mostrarMensagem(mensagem) {
+    const mensagemEl = document.getElementById("mensagem-carrinho");
+    mensagemEl.style.display = "block";
+    mensagemEl.textContent = mensagem;
+    setTimeout(() => { 
+      mensagemEl.style.display = "none"; 
+    }, 3000);
+  }
+
+  // Expor função ao escopo global para funcionar no botão
+  window.adicionarAoCarrinho = adicionarAoCarrinho;
+  window.alterarQuantidade = alterarQuantidade;
+</script>
+
+   
+  <div id="mensagem-carrinho" style="display:none; background:#dd6645; color:white; padding:10px; border-radius:10px; position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:999; font-weight:bold;">
+    Produto adicionado ao carrinho!
+  </div>
+
+</body>
+</html>

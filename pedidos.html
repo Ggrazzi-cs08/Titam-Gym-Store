@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedidos Realizados - Titan Gym Store</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+  <script src="https://www.gstatic.com/firebasejs/12.2.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/12.2.1/firebase-auth-compat.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #fff1e0;
+      color: #6b1e16;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: #fff1e0;
+      padding: 1rem;
+      text-align: center;
+      position: relative;
+      border-bottom: 1px solid #e8d5c4;
+    }
+
+    .voltar {
+      position: absolute;
+      top: 12px;
+      left: 30px;
+      background: #a13a24;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    main {
+      flex-grow: 1;
+      padding: 1rem;
+      padding-bottom: 70px; /* Espaço para o footer */
+    }
+
+    .pedido-card {
+      background: #fecd85;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      border-left: 4px solid #c94c29;
+    }
+
+    .pedido-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px dashed #e8d5c4;
+    }
+
+    .pedido-id {
+      font-weight: bold;
+      color: #a13a24;
+    }
+
+    .pedido-data {
+      font-size: 0.85rem;
+      color: #8a5a44;
+    }
+
+    .pedido-status {
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .status-aprovado {
+      background-color: #eb6743;
+      color: #fff;
+    }
+
+    .status-pendente {
+      background-color: #fff9c4;
+      color: #f57f17;
+    }
+
+    .status-cancelado {
+      background-color: #ffcdd2;
+      color: #c62828;
+    }
+
+    .item-pedido {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.8rem;
+      gap: 0.8rem;
+    }
+
+    .item-pedido img {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .item-info {
+      flex: 1;
+    }
+
+    .item-info h4 {
+      margin: 0;
+      font-size: 0.95rem;
+      color: #a8432a;
+    }
+
+    .item-info p {
+      margin: 2px 0;
+      font-size: 0.8rem;
+      color: #6b1e16;
+    }
+
+    .pedido-total {
+      text-align: right;
+      font-weight: bold;
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      border-top: 1px dashed #e8d5c4;
+      color: #a13a24;
+    }
+
+    .vazio {
+      text-align: center;
+      padding: 2rem;
+      color: #a8432a;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #a8432a;
+    }
+
+    .error {
+      text-align: center;
+      padding: 2rem;
+      color: #c94c29;
+      background-color: #ffebee;
+      border-radius: 8px;
+      margin: 1rem;
+    }
+
+    .debug-info {
+      font-size: 0.8rem;
+      color: #888;
+      padding: 0.5rem;
+      background-color: #f5f5f5;
+      border-radius: 4px;
+      margin-top: 1rem;
+      display: none; /* Oculto por padrão, pode ser ativado para depuração */
+    }
+
+    footer nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin: 0;
+      padding: 0.5rem 0;
+      background-color: #fecd85;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+
+    footer nav ul li a {
+      color: #eb6743;
+      font-size: 1.5rem;
+      text-decoration: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      transition: color 0.3s ease;
+    }
+
+    footer nav ul li a:hover,
+    footer nav ul li a.active {
+      color: #c94c29;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <button class="voltar" onclick="history.back()">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <h2>Meus Pedidos</h2>
+  </header>
+
+  <main id="pedidos-container">
+    <div class="loading">Carregando seus pedidos...</div>
+  </main>
+
+  <div id="debug-info" class="debug-info"></div>
+
+  <footer>
+    <nav>
+      <ul>
+        <li><a href="home.html"><i class="bi bi-house-door"></i></a></li>
+        <li><a href="carrinho.html"><i class="bi bi-cart"></i></a></li>
+        <li><a href="profile.html" class="active"><i class="bi bi-person-fill"></i></a></li>
+      </ul>
+    </nav>
+  </footer>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDtymMVJEmQUivZr7ruvQHdg0L370yUaJ4",
+      authDomain: "tytangym-9bed1.firebaseapp.com",
+      projectId: "tytangym-9bed1",
+      storageBucket: "tytangym-9bed1.firebasestorage.app",
+      messagingSenderId: "990222345653",
+      appId: "1:990222345653:web:452380931b495d5603a5fc",
+      measurementId: "G-MH4ZYXVKHT"
+    };
+    
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let userId = null;
+
+    // Função para debug - exibir informações úteis
+    function debugLog(message) {
+      console.log(message);
+      const debugEl = document.getElementById('debug-info');
+      if (debugEl) {
+        debugEl.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${message}</div>`;
+      }
+    }
+
+    // Observar mudanças no estado de autenticação
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        userId = user.uid;
+        debugLog("Usuário logado: " + userId);
+        carregarPedidos();
+      } else {
+        debugLog("Usuário não autenticado");
+        window.location.href = "login.html";
+      }
+    });
+
+    // Função para carregar os pedidos do usuário
+    async function carregarPedidos() {
+      try {
+        debugLog("Iniciando carregamento de pedidos...");
+        
+        // Primeiro, vamos tentar buscar os pedidos de forma simples
+        const pedidosRef = db.collection('pedidos');
+        const snapshot = await pedidosRef.get();
+        
+        debugLog(`Total de documentos na coleção 'pedidos': ${snapshot.size}`);
+        
+        // Verificar se há documentos
+        if (snapshot.empty) {
+          document.getElementById('pedidos-container').innerHTML = 
+            '<div class="vazio">Nenhum pedido encontrado no banco de dados.</div>';
+          return;
+        }
+        
+        // Filtrar os pedidos do usuário atual
+        const pedidosDoUsuario = [];
+        snapshot.forEach(doc => {
+          const pedido = doc.data();
+          debugLog(`Pedido encontrado: ${doc.id}, userID: ${pedido.userId}`);
+          
+          if (pedido.userId === userId) {
+            pedidosDoUsuario.push({
+              id: doc.id,
+              ...pedido
+            });
+          }
+        });
+        
+        debugLog(`Pedidos do usuário ${userId}: ${pedidosDoUsuario.length}`);
+        
+        const pedidosContainer = document.getElementById('pedidos-container');
+        
+        if (pedidosDoUsuario.length === 0) {
+          pedidosContainer.innerHTML = '<div class="vazio">Você ainda não fez nenhum pedido.</div>';
+          return;
+        }
+        
+        // Ordenar pedidos por data (mais recente primeiro)
+        pedidosDoUsuario.sort((a, b) => {
+          const dateA = a.criadoEm ? a.criadoEm.toDate() : new Date(0);
+          const dateB = b.criadoEm ? b.criadoEm.toDate() : new Date(0);
+          return dateB - dateA;
+        });
+        
+        let html = '';
+        
+        pedidosDoUsuario.forEach(pedido => {
+          const dataPedido = pedido.criadoEm ? pedido.criadoEm.toDate() : new Date();
+          
+          // Formatar a data
+          const dataFormatada = dataPedido.toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+          
+          // Determinar classe de status
+          let statusClasse = 'status-pendente';
+          let statusTexto = 'Pendente';
+          
+          if (pedido.status === 'aprovado') {
+            statusClasse = 'status-aprovado';
+            statusTexto = 'Aprovado';
+          } else if (pedido.status === 'cancelado') {
+            statusClasse = 'status-cancelado';
+            statusTexto = 'Cancelado';
+          }
+          
+          html += `
+            <div class="pedido-card">
+              <div class="pedido-header">
+                <div>
+                  <div class="pedido-id">Pedido #${pedido.id.substring(0, 8)}</div>
+                  <div class="pedido-data">${dataFormatada}</div>
+                </div>
+                <div class="pedido-status ${statusClasse}">${statusTexto}</div>
+              </div>
+          `;
+          
+          // Adicionar itens do pedido
+          if (pedido.itens && pedido.itens.length > 0) {
+            pedido.itens.forEach(item => {
+              html += `
+                <div class="item-pedido">
+                  <img src="${item.imagem || 'https://via.placeholder.com/50x50?text=Produto'}" alt="${item.nome}">
+                  <div class="item-info">
+                    <h4>${item.nome}</h4>
+                    <p>Quantidade: ${item.quantidade}</p>
+                    <p>R$ ${item.preco ? item.preco.toFixed(2).replace('.', ',') : '0,00'} cada</p>
+                  </div>
+                </div>
+              `;
+            });
+          } else {
+            html += `<p>Nenhum item encontrado neste pedido.</p>`;
+          }
+          
+          // Adicionar total do pedido
+          html += `
+            <div class="pedido-total">
+              Total: R$ ${pedido.total ? pedido.total.toFixed(2).replace('.', ',') : '0,00'}
+            </div>
+          `;
+          
+          html += `</div>`;
+        });
+        
+        pedidosContainer.innerHTML = html;
+        
+      } catch (error) {
+        console.error("Erro ao carregar pedidos:", error);
+        debugLog("Erro ao carregar pedidos: " + error.message);
+        document.getElementById('pedidos-container').innerHTML = 
+          '<div class="error">Erro ao carregar pedidos. Verifique o console para detalhes.</div>';
+      }
+    }
+
+  </script>
+</body>
+</html>
