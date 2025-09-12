@@ -423,6 +423,20 @@
   document.getElementById("campo-pesquisa").addEventListener("keypress", function(e) {
     if (e.key === "Enter") pesquisar();
   });
+
+    const footer = document.querySelector("footer");
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", () => {
+      // quando a altura da viewport ficar menor que a altura da janela,
+      // significa que o teclado abriu
+      if (window.visualViewport.height < window.innerHeight) {
+        footer.style.display = "none";
+      } else {
+        footer.style.display = "flex"; // ou "block", conforme seu layout
+      }
+    });
+  }
 </script>
 
 
