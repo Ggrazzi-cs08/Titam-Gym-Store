@@ -18,9 +18,15 @@
     body {
       background-color: #fff4ea;
       color: #6b1e16;
-      padding-bottom: calc(60px + env(safe-area-inset-bottom)); /* espaço extra */
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
+    main {
+      flex: 1;
+      padding-bottom: 60px; /* altura do footer */
+    }
 
     header {
       padding: 1rem;
@@ -50,7 +56,6 @@
       object-fit: contain; /* mostra a imagem completa sem cortar */
       flex-shrink: 0;
     }
-
 
     .search-container {
       display: flex;
@@ -205,6 +210,19 @@
       justify-content: center;
     }
 
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      transition: transform 0.3s ease;
+    }
+
+    footer.hidden {
+      transform: translateY(100%);
+    }
+
     footer nav ul {
       list-style: none;
       display: flex;
@@ -213,16 +231,8 @@
       margin: 0;
       padding: 0.5rem 0;
       background-color: #fecd85;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      z-index: 1000;
-
-      /* 🔽 Impede o rodapé de subir com o teclado */
       padding-bottom: env(safe-area-inset-bottom);
     }
-
 
     footer nav ul li a {
       color: #eb6743;
@@ -253,108 +263,108 @@
   </style>
 </head>
 <body>
-
-  <div class="carousel-container">
-    <div class="carousel-track">
-      <img src="kit1.png" alt="carrossel1">
-      <img src="kit2.png" alt="carrossel2">
-      <img src="kit3.png" alt="carrossel3">
+  <main>
+    <div class="carousel-container">
+      <div class="carousel-track">
+        <img src="kit1.png" alt="carrossel1">
+        <img src="kit2.png" alt="carrossel2">
+        <img src="kit3.png" alt="carrossel3">
+      </div>
     </div>
-  </div>
 
-  <div class="search-container">
-    <div class="search-box">
-      <input id="campo-pesquisa" type="text" placeholder="Encontre o suplemento ideal para você" />
-      <button onclick="pesquisar()">
-        <i class="bi bi-search"></i>
-      </button>
-
+    <div class="search-container">
+      <div class="search-box">
+        <input id="campo-pesquisa" type="text" placeholder="Encontre o suplemento ideal para você" />
+        <button onclick="pesquisar()">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
     </div>
-  </div>
 
-  <div class="categories">
-    <a href="#massa" class="category">
-      <i class="bi bi-activity"></i>
-      Massa muscular
-    </a>
-    <a href="#energia" class="category">
-      <i class="bi bi-lightning-fill"></i>
-      Energia
-    </a>
-   <a href="#emagrecimento" class="category">
-      <i class="bi bi-capsule"></i>
-      <!-- hifenização manual com &shy; -->
-      <span class="cat-text">Ema&shy;gre&shy;ci&shy;men&shy;to</span>
-    </a>
-  </div>
+    <div class="categories">
+      <a href="#massa" class="category">
+        <i class="bi bi-activity"></i>
+        Massa muscular
+      </a>
+      <a href="#energia" class="category">
+        <i class="bi bi-lightning-fill"></i>
+        Energia
+      </a>
+     <a href="#emagrecimento" class="category">
+        <i class="bi bi-capsule"></i>
+        <!-- hifenização manual com &shy; -->
+        <span class="cat-text">Ema&shy;gre&shy;ci&shy;men&shy;to</span>
+      </a>
+    </div>
 
-  <div id="massa" class="section-title">
-    <span>Massa muscular</span>
-  </div>
-  <div class="product-grid">
-    <a href="whey3.html" style="text-decoration: none; color: #6b1e16; font-weight: bold;">
-      <div class="product">
-        <img src="whey3.png" alt="whey3">
-        <div>Whey Chocolate com avelã</div>
-        <div class="price">R$179,90</div>
-        <button class="add-button"><i class="bi bi-basket2-fill"></i></button>
-      </div>
-    </a>
-    <a href="whey4.html" style="text-decoration: none; color: #6b1e16; font-weight: bold;">
-      <div class="product">
-        <img src="whey4.png" alt="whey4">
-        <div>Whey Morango com banana</div>
-        <div class="price">R$170,00</div>
-        <button class="add-button"><i class="bi bi-basket2-fill"></i></button>
-      </div>
-    </a>
-  </div>
+    <div id="massa" class="section-title">
+      <span>Massa muscular</span>
+    </div>
+    <div class="product-grid">
+      <a href="whey3.html" style="text-decoration: none; color: #6b1e16; font-weight: bold;">
+        <div class="product">
+          <img src="whey3.png" alt="whey3">
+          <div>Whey Chocolate com avelã</div>
+          <div class="price">R$179,90</div>
+          <button class="add-button"><i class="bi bi-basket2-fill"></i></button>
+        </div>
+      </a>
+      <a href="whey4.html" style="text-decoration: none; color: #6b1e16; font-weight: bold;">
+        <div class="product">
+          <img src="whey4.png" alt="whey4">
+          <div>Whey Morango com banana</div>
+          <div class="price">R$170,00</div>
+          <button class="add-button"><i class="bi bi-basket2-fill"></i></button>
+        </div>
+      </a>
+    </div>
 
-  <div id="emagrecimento" class="section-title">
-    <span>Emagrecimento</span>
-  </div>
-  <div class="product-grid">
-    <a href="emagre1.html" style="text-decoration: none; color: #6b1e16; font-weight: bold;">
-      <div class="product">
-        <img src="creatinadux.png" alt="creatina">
-        <div>Creatina Dux 300g</div>
-        <div class="price">R$109,90</div>
-        <button class="add-button"><i class="bi bi-basket2-fill"></i></button>
-      </div>
-    </a>
-    <a href="emagre3.html" style="text-decoration: none; color: #6b1e16; font-weight: bold;">
-      <div class="product">
-        <img src="l.cartina.png" alt="l-carnitina">
-        <div>L-Carnitina 120 cápsulas</div>
-        <div class="price">R$109,12</div>
-        <button class="add-button"><i class="bi bi-basket2-fill"></i></button>
-      </div>
-    </a>
-  </div>
+    <div id="emagrecimento" class="section-title">
+      <span>Emagrecimento</span>
+    </div>
+    <div class="product-grid">
+      <a href="emagre1.html" style="text-decoration: none; color: #6b1e16; font-weight: bold;">
+        <div class="product">
+          <img src="creatinadux.png" alt="creatina">
+          <div>Creatina Dux 300g</div>
+          <div class="price">R$109,90</div>
+          <button class="add-button"><i class="bi bi-basket2-fill"></i></button>
+        </div>
+      </a>
+      <a href="emagre3.html" style="text-decoration: none; color: #6b1e16; font-weight: bold;">
+        <div class="product">
+          <img src="l.cartina.png" alt="l-carnitina">
+          <div>L-Carnitina 120 cápsulas</div>
+          <div class="price">R$109,12</div>
+          <button class="add-button"><i class="bi bi-basket2-fill"></i></button>
+        </div>
+      </a>
+    </div>
 
-  <div id="energia" class="section-title">
-    <span>Energia</span>
-  </div>
-  <div class="product-grid">
-    <a href="energia1.html" style="text-decoration: none; color: #6b1e16; font-weight: bold;">
-      <div class="product">
-        <img src="energia1.png" alt="pre-treino">
-        <div>Pré-Treino - Explode Energy 300g</div>
-        <div class="price">R$71,90</div>
-        <button class="add-button"><i class="bi bi-basket2-fill"></i></button>
-      </div>
-    </a>
-    <a href="energia3.html" style="text-decoration: none; color: #6b1e16; font-weight: bold;">
-      <div class="product">
-        <img src="energia3.png" alt="cafeina">
-        <div>Cafeína 37g - 60 cápsulas</div>
-        <div class="price">R$59,90</div>
-        <button class="add-button"><i class="bi bi-basket2-fill"></i></button>
-      </div>
-    </a>
-  </div>
+    <div id="energia" class="section-title">
+      <span>Energia</span>
+    </div>
+    <div class="product-grid">
+      <a href="energia1.html" style="text-decoration: none; color: #6b1e16; font-weight: bold;">
+        <div class="product">
+          <img src="energia1.png" alt="pre-treino">
+          <div>Pré-Treino - Explode Energy 300g</div>
+          <div class="price">R$71,90</div>
+          <button class="add-button"><i class="bi bi-basket2-fill"></i></button>
+        </div>
+      </a>
+      <a href="energia3.html" style="text-decoration: none; color: #6b1e16; font-weight: bold;">
+        <div class="product">
+          <img src="energia3.png" alt="cafeina">
+          <div>Cafeína 37g - 60 cápsulas</div>
+          <div class="price">R$59,90</div>
+          <button class="add-button"><i class="bi bi-basket2-fill"></i></button>
+        </div>
+      </a>
+    </div>
+  </main>
 
-  <footer>
+  <footer id="main-footer">
     <nav>
       <ul>
         <li><a href="home.html" class="active"><i class="bi bi-house-door"></i></a></li>
@@ -424,54 +434,39 @@
     if (e.key === "Enter") pesquisar();
   });
 
-    const footerMenu = document.querySelector("footer nav ul");
-
-  function hideFooter() {
-    if (!footerMenu) return;
-    footerMenu.style.display = "none";
-  }
-
-  function showFooter() {
-    if (!footerMenu) return;
-    footerMenu.style.display = "flex";
-  }
-
-  // Detecta mudanças de viewport (quando teclado abre/fecha)
-  if (window.visualViewport) {
-    let lastHeight = window.visualViewport.height;
-    window.visualViewport.addEventListener("resize", () => {
-      const vh = window.visualViewport.height;
-      if (vh < window.innerHeight && vh < lastHeight) {
-        hideFooter();
-      } else {
-        showFooter();
-      }
-      lastHeight = vh;
-    });
-  }
-
-  // Fallback: foco em inputs
-  document.addEventListener("focusin", (e) => {
-    const t = e.target;
-    if (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable) {
-      hideFooter();
+  // Controle de visibilidade do footer
+  const footer = document.getElementById("main-footer");
+  const searchInput = document.getElementById("campo-pesquisa");
+  
+  // Esconder o footer quando o input receber foco
+  searchInput.addEventListener('focus', () => {
+    footer.classList.add('hidden');
+  });
+  
+  // Mostrar o footer quando o input perder o foco
+  searchInput.addEventListener('blur', () => {
+    footer.classList.remove('hidden');
+  });
+  
+  // Para outros elementos de entrada de texto que possam ser adicionados
+  document.addEventListener('focusin', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+      footer.classList.add('hidden');
     }
   });
-
-  document.addEventListener("focusout", () => {
-    setTimeout(() => {
-      const ae = document.activeElement;
-      if (!ae || (ae.tagName !== "INPUT" && ae.tagName !== "TEXTAREA" && !ae.isContentEditable)) {
-        showFooter();
-      }
-    }, 150);
+  
+  document.addEventListener('focusout', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+      // Pequeno atraso para garantir que outro campo não esteja recebendo foco
+      setTimeout(() => {
+        if (document.activeElement.tagName !== 'INPUT' && 
+            document.activeElement.tagName !== 'TEXTAREA') {
+          footer.classList.remove('hidden');
+        }
+      }, 100);
+    }
   });
-
-</script>
-
-
+  </script>
 </body>
 </html>
-
-
 
