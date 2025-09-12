@@ -424,17 +424,48 @@
     if (e.key === "Enter") pesquisar();
   });
 
-    const footer = document.querySelector("footer");
+    const footerMenu = document.querySelector("footer nav ul");
 
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener("resize", () => {
-        if (window.visualViewport.height < window.innerHeight) {
-          footer.style.display = "none";
-        } else {
-          footer.style.display = "block"; // mantém o footer normal
-        }
-      });
+  function hideFooter() {
+    if (!footerMenu) return;
+    footerMenu.style.display = "none";
+  }
+
+  function showFooter() {
+    if (!footerMenu) return;
+    footerMenu.style.display = "flex";
+  }
+
+  // Detecta mudanças de viewport (quando teclado abre/fecha)
+  if (window.visualViewport) {
+    let lastHeight = window.visualViewport.height;
+    window.visualViewport.addEventListener("resize", () => {
+      const vh = window.visualViewport.height;
+      if (vh < window.innerHeight && vh < lastHeight) {
+        hideFooter();
+      } else {
+        showFooter();
+      }
+      lastHeight = vh;
+    });
+  }
+
+  // Fallback: foco em inputs
+  document.addEventListener("focusin", (e) => {
+    const t = e.target;
+    if (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable) {
+      hideFooter();
     }
+  });
+
+  document.addEventListener("focusout", () => {
+    setTimeout(() => {
+      const ae = document.activeElement;
+      if (!ae || (ae.tagName !== "INPUT" && ae.tagName !== "TEXTAREA" && !ae.isContentEditable)) {
+        showFooter();
+      }
+    }, 150);
+  });
 
 </script>
 
