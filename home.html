@@ -426,17 +426,16 @@
 
     const footer = document.querySelector("footer");
 
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener("resize", () => {
-      // quando a altura da viewport ficar menor que a altura da janela,
-      // significa que o teclado abriu
-      if (window.visualViewport.height < window.innerHeight) {
-        footer.style.display = "none";
-      } else {
-        footer.style.display = "flex"; // ou "block", conforme seu layout
-      }
-    });
-  }
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", () => {
+        if (window.visualViewport.height < window.innerHeight) {
+          footer.style.display = "none";
+        } else {
+          footer.style.display = "block"; // mantém o footer normal
+        }
+      });
+    }
+
 </script>
 
 
