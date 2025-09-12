@@ -217,10 +217,11 @@
       width: 100%;
       z-index: 1000;
       transition: transform 0.3s ease;
+      transform: translateY(0); /* Posição inicial */
     }
 
     footer.hidden {
-      transform: translateY(100%);
+      transform: translateY(100%); /* Escondido para baixo */
     }
 
     footer nav ul {
@@ -434,47 +435,78 @@
     if (e.key === "Enter") pesquisar();
   });
 
-  // Controle de visibilidade do footer
+  // Controle de visibilidade do footer - SOLUÇÃO DEFINITIVA
   const footer = document.getElementById("main-footer");
   const searchInput = document.getElementById("campo-pesquisa");
+  
+  // Variável para controlar se o teclado está aberto
+  let isKeyboardVisible = false;
   
   // Esconder o footer quando o input receber foco
   searchInput.addEventListener('focus', () => {
     footer.classList.add('hidden');
+    isKeyboardVisible = true;
   });
   
   // Mostrar o footer quando o input perder o foco
   searchInput.addEventListener('blur', () => {
-    // Pequeno atraso para garantir que outro campo não esteja recebendo foco
+    isKeyboardVisible = false;
+    
+    // Pequeno atraso para garantir que o teclado foi realmente fechado
     setTimeout(() => {
-      if (document.activeElement !== searchInput) {
+      // Verifica se o usuário não focou em outro input
+      const activeElement = document.activeElement;
+      if (activeElement.tagName !== 'INPUT' && activeElement.tagName !== 'TEXTAREA') {
         footer.classList.remove('hidden');
       }
-    }, 100);
+    }, 300); // Aumentei o tempo para 300ms para garantir que o teclado foi totalmente ocultado
+  });
+  
+  // Verificar mudanças na viewport (para dispositivos que não disparam o evento blur corretamente)
+  let viewportHeight = window.innerHeight;
+  
+  window.addEventListener('resize', () => {
+    // Se a altura da viewport aumentou, provavelmente o teclado foi fechado
+    if (window.innerHeight > viewportHeight && isKeyboardVisible) {
+      isKeyboardVisible = false;
+      footer.classList.remove('hidden');
+    }
+    viewportHeight = window.innerHeight;
   });
   
   // Para outros elementos de entrada de texto que possam ser adicionados
   document.addEventListener('focusin', (e) => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
       footer.classList.add('hidden');
+      isKeyboardVisible = true;
     }
   });
   
   document.addEventListener('focusout', (e) => {
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-      // Pequeno atraso para garantir que outro campo não esteja recebendo foco
+      isKeyboardVisible = false;
+      
+      // Pequeno atraso para garantir que o teclado foi realmente fechado
       setTimeout(() => {
-        if (document.activeElement.tagName !== 'INPUT' && 
-            document.activeElement.tagName !== 'TEXTAREA') {
+        const activeElement = document.activeElement;
+        if (activeElement.tagName !== 'INPUT' && activeElement.tagName !== 'TEXTAREA') {
           footer.classList.remove('hidden');
         }
-      }, 100);
+      }, 300);
     }
   });
 
   // Garantir que o footer esteja visível ao carregar a página
   window.addEventListener('load', () => {
     footer.classList.remove('hidden');
+    isKeyboardVisible = false;
+  });
+  
+  // Garantir que o footer esteja visível ao rolar a página (caso o usuário faça scroll para fechar o teclado)
+  window.addEventListener('scroll', () => {
+    if (!isKeyboardVisible) {
+      footer.classList.remove('hidden');
+    }
   });
   </script>
 </body>
