@@ -445,7 +445,12 @@
   
   // Mostrar o footer quando o input perder o foco
   searchInput.addEventListener('blur', () => {
-    footer.classList.remove('hidden');
+    // Pequeno atraso para garantir que outro campo não esteja recebendo foco
+    setTimeout(() => {
+      if (document.activeElement !== searchInput) {
+        footer.classList.remove('hidden');
+      }
+    }, 100);
   });
   
   // Para outros elementos de entrada de texto que possam ser adicionados
@@ -466,7 +471,11 @@
       }, 100);
     }
   });
+
+  // Garantir que o footer esteja visível ao carregar a página
+  window.addEventListener('load', () => {
+    footer.classList.remove('hidden');
+  });
   </script>
 </body>
 </html>
-
